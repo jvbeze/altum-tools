@@ -44,6 +44,24 @@
       transition: color 0.2s; padding: 4px;
     }
     .gear-btn:hover, .gear-btn.active { color: #B89352; }
+    .onboarding {
+      background: rgba(184,147,82,0.08);
+      border-bottom: 1px solid rgba(184,147,82,0.2);
+      padding: 16px 28px;
+      position: relative;
+    }
+    .ob-steps { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ob-step { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px; }
+    .ob-icon { font-size: 13px; color: #B89352; font-weight: 700; font-family: 'Cormorant Garamond', serif; flex-shrink: 0; }
+    .ob-text { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.4; }
+    .ob-text strong { color: rgba(255,255,255,0.8); }
+    .ob-arrow { color: rgba(184,147,82,0.4); font-size: 14px; flex-shrink: 0; }
+    .ob-close {
+      position: absolute; top: 10px; right: 14px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.2); font-size: 12px; transition: color 0.2s;
+    }
+    .ob-close:hover { color: rgba(255,255,255,0.5); }
     .card-body { padding: 28px 36px 32px; }
     .settings-panel {
       background: rgba(0,0,0,0.2);
@@ -53,15 +71,10 @@
     .settings-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #B89352; font-weight: 500; margin-bottom: 14px; }
     .field { margin-bottom: 18px; }
     .field:last-child { margin-bottom: 0; }
-    label {
-      display: block; font-size: 11px; font-weight: 500;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      color: rgba(255,255,255,0.45); margin-bottom: 8px;
-    }
+    label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 8px; }
     label .req { color: #B89352; margin-left: 2px; }
     input {
-      width: 100%;
-      background: rgba(0,0,0,0.25);
+      width: 100%; background: rgba(0,0,0,0.25);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 3px; color: #fff;
       font-family: 'DM Sans', sans-serif; font-size: 14px;
@@ -84,47 +97,14 @@
     .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
     .status-box {
       border-radius: 3px; padding: 14px 16px; font-size: 13px;
-      margin-top: 16px; display: flex; gap: 10px; align-items: flex-start;
-      line-height: 1.5;
+      margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; line-height: 1.5;
     }
-    .status-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
-    .status-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-    .spinner {
-      display: inline-block; width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
-      border-radius: 50%; animation: spin 0.7s linear infinite;
-      vertical-align: middle; margin-right: 8px;
-    }
-    .onboarding {
-      background: rgba(184,147,82,0.08);
-      border-bottom: 1px solid rgba(184,147,82,0.2);
-      padding: 16px 28px;
-      position: relative;
-    }
-    .ob-steps {
-      display: flex; align-items: center; gap: 10px;
-      flex-wrap: wrap;
-    }
-    .ob-step {
-      display: flex; align-items: center; gap: 8px;
-      flex: 1; min-width: 120px;
-    }
-    .ob-icon {
-      font-size: 13px; color: #B89352; font-weight: 700;
-      font-family: 'Cormorant Garamond', serif; flex-shrink: 0;
-    }
-    .ob-text { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.4; }
-    .ob-text strong { color: rgba(255,255,255,0.8); }
-    .ob-arrow { color: rgba(184,147,82,0.4); font-size: 14px; flex-shrink: 0; }
-    .ob-close {
-      position: absolute; top: 10px; right: 14px;
-      background: none; border: none; cursor: pointer;
-      color: rgba(255,255,255,0.2); font-size: 12px;
-      transition: color 0.2s;
-    }
-    .ob-close:hover { color: rgba(255,255,255,0.5); }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .status-ok  { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.3);  color: #86efac; }
+    .status-err { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
     .hidden { display: none; }
+    .hint { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 10px; text-align: center; line-height: 1.5; }
+    .hint a { color: rgba(184,147,82,0.6); text-decoration: none; }
+    .hint a:hover { color: #B89352; }
   </style>
 </head>
 <body>
@@ -135,42 +115,42 @@
         <span class="logo-text">Altum Capital</span>
       </div>
       <div class="card-title">Gerador de NDA</div>
-      <div class="card-subtitle">Preencha os dados — o envio para Anna é automático.</div>
-      <button class="gear-btn" id="gearBtn" title="Configurações de envio">⚙</button>
+      <div class="card-subtitle">Preencha os dados — abre seu e-mail pronto para enviar.</div>
+      <button class="gear-btn" id="gearBtn" title="Configurações de envio">&#9881;</button>
     </div>
     <div class="onboarding" id="onboarding">
       <div class="ob-steps">
         <div class="ob-step">
-          <div class="ob-icon">①</div>
-          <div class="ob-text">Preencha os dados da contraparte nos campos abaixo</div>
+          <div class="ob-icon">&#9312;</div>
+          <div class="ob-text">Preencha os dados da contraparte</div>
         </div>
-        <div class="ob-arrow">→</div>
+        <div class="ob-arrow">&#8594;</div>
         <div class="ob-step">
-          <div class="ob-icon">②</div>
-          <div class="ob-text">Clique em <strong>Gerar e Enviar NDA</strong></div>
+          <div class="ob-icon">&#9313;</div>
+          <div class="ob-text">Clique em <strong>Gerar E-mail do NDA</strong></div>
         </div>
-        <div class="ob-arrow">→</div>
+        <div class="ob-arrow">&#8594;</div>
         <div class="ob-step">
-          <div class="ob-icon">③</div>
-          <div class="ob-text">Anna recebe as instruções e faz o upload no <strong>ZapSign</strong> — JV fica em cópia</div>
+          <div class="ob-icon">&#9314;</div>
+          <div class="ob-text">Seu e-mail abre pronto — Anna no destino, <strong>JV em c&#243;pia</strong>. S&#243; clicar Enviar.</div>
         </div>
       </div>
-      <button class="ob-close" onclick="fecharOnboarding()" title="Fechar">✕</button>
+      <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <div class="settings-title">Configurações de Envio</div>
+        <div class="settings-title">&#9881; Configura&#231;&#245;es de Envio</div>
         <div class="field">
-          <label>E-mail destino (responsável ZapSign)</label>
+          <label>E-mail destino (respons&#225;vel ZapSign)</label>
           <input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" />
         </div>
         <div class="field">
-          <label>E-mail em cópia (CC)</label>
+          <label>E-mail em c&#243;pia (CC &#8212; JV)</label>
           <input type="email" id="cfgCC" value="jv@altumcapital.com.br" />
         </div>
       </div>
       <div class="field">
-        <label>Razão Social ou Nome Completo <span class="req">*</span></label>
+        <label>Raz&#227;o Social ou Nome Completo <span class="req">*</span></label>
         <input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." />
       </div>
       <div class="field">
@@ -193,100 +173,103 @@
         <input type="email" id="emailRep" placeholder="nome@empresa.com.br" />
       </div>
       <div class="divider"></div>
-      <button class="btn-submit" id="btnSubmit" onclick="enviarNDA()">
-        Gerar e Enviar NDA
+      <button class="btn-submit" id="btnSubmit" onclick="gerarEmail()">
+        Gerar E-mail do NDA
       </button>
+      <p class="hint">Seu cliente de e-mail ser&#225; aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
       <div class="status-box status-ok hidden" id="statusOk"></div>
       <div class="status-box status-err hidden" id="statusErr"></div>
     </div>
   </div>
   <script>
-    function fecharOnboarding() {
-      document.getElementById('onboarding').style.display = 'none';
-    }
     document.getElementById('gearBtn').addEventListener('click', function() {
-      const panel = document.getElementById('settingsPanel');
-      panel.classList.toggle('hidden');
+      document.getElementById('settingsPanel').classList.toggle('hidden');
       this.classList.toggle('active');
     });
-    async function enviarNDA() {
-      const razaoSocial   = document.getElementById('razaoSocial').value.trim();
-      const cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Não informado';
-      const representante = document.getElementById('representante').value.trim();
-      const cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
-      const emailRep      = document.getElementById('emailRep').value.trim();
-      const dest          = document.getElementById('cfgDest').value.trim();
-      const cc            = document.getElementById('cfgCC').value.trim();
-      const okBox  = document.getElementById('statusOk');
-      const errBox = document.getElementById('statusErr');
-      const btn    = document.getElementById('btnSubmit');
+
+    function gerarEmail() {
+      var razaoSocial   = document.getElementById('razaoSocial').value.trim();
+      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
+      var representante = document.getElementById('representante').value.trim();
+      var cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
+      var emailRep      = document.getElementById('emailRep').value.trim();
+      var dest          = document.getElementById('cfgDest').value.trim();
+      var cc            = document.getElementById('cfgCC').value.trim();
+
+      var okBox  = document.getElementById('statusOk');
+      var errBox = document.getElementById('statusErr');
       okBox.classList.add('hidden');
       errBox.classList.add('hidden');
+
       if (!razaoSocial || !representante || !emailRep) {
-        errBox.innerHTML = '✕  Preencha os campos obrigatórios marcados com *.';
+        errBox.innerHTML = '✕ &nbsp;Preencha os campos obrigatórios marcados com *.';
         errBox.classList.remove('hidden');
         return;
       }
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Enviando...';
-      const emailBody = `Olá, Anna!
 
-Segue abaixo os dados da contraparte para preenchimento e envio do NDA via ZapSign:
+      var subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
+      var body =
+'Olá, Anna!
 
-━━━━━━━━━━━━━━━━━━━━━━
-DADOS DA CONTRAPARTE
-━━━━━━━━━━━━━━━━━━━━━━
+' +
+'Segue abaixo os dados da contraparte para preenchimento e envio do NDA via ZapSign:
 
-• Razão Social / Nome: ${razaoSocial}
-• CPF / CNPJ: ${cnpjCpf}
-• Representante: ${representante}
-• Cargo: ${cargo}
-• E-mail: ${emailRep}
+' +
+'━━━━━━━━━━━━━━━━━━━━━━
+' +
+'DADOS DA CONTRAPARTE
+' +
+'━━━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━━━━━━━
+' +
+'• Razão Social / Nome: ' + razaoSocial + '
+' +
+'• CPF / CNPJ: ' + cnpjCpf + '
+' +
+'• Representante: ' + representante + '
+' +
+'• Cargo: ' + cargo + '
+' +
+'• E-mail: ' + emailRep + '
 
-Por favor:
-1. Abra o modelo de NDA padrão da Altum
-2. Preencha com os dados acima
-3. Faça upload no ZapSign com os seguintes signatários:
-   → ${representante} (${emailRep})
-   → João Victor Beze (jv@altumcapital.com.br)
+' +
+'━━━━━━━━━━━━━━━━━━━━━━
 
-Obrigado!
-A. Financial Ltda.`;
-      try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            messages: [{
-              role: 'user',
-              content: `Send this email via Gmail exactly as written:\n\nTo: ${dest}\nCC: ${cc}\nSubject: NDA — ${razaoSocial} | Preencher e enviar via ZapSign\nBody:\n${emailBody}`
-            }],
-            mcp_servers: [{ type: 'url', url: 'https://gmail.mcp.claude.com/mcp', name: 'gmail-mcp' }]
-          })
+' +
+'Por favor:
+' +
+'1. Abra o modelo de NDA padrão da Altum
+' +
+'2. Preencha com os dados acima
+' +
+'3. Faça upload no ZapSign com os seguintes signatários:
+' +
+'   → ' + representante + ' (' + emailRep + ')
+' +
+'   → João Victor Beze (jv@altumcapital.com.br)
+
+' +
+'Obrigado!
+
+' +
+'A. Financial Ltda.';
+
+      var mailto = 'mailto:' + encodeURIComponent(dest)
+        + '?cc=' + encodeURIComponent(cc)
+        + '&subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailto;
+
+      okBox.innerHTML = '✓ &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
+      okBox.classList.remove('hidden');
+
+      setTimeout(function() {
+        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id) {
+          document.getElementById(id).value = '';
         });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-        const hasResult = data.content?.some(b => b.type === 'mcp_tool_result');
-        const txt = data.content?.filter(b => b.type === 'text').map(b => b.text).join(' ').toLowerCase() || '';
-        if (hasResult || txt.includes('sent') || txt.includes('enviado')) {
-          okBox.innerHTML = `✓  E-mail enviado para <strong>${dest}</strong> com CC para <strong>${cc}</strong>. Anna receberá as instruções para preencher e enviar via ZapSign.`;
-          okBox.classList.remove('hidden');
-          ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(id => {
-            document.getElementById(id).value = '';
-          });
-        } else {
-          throw new Error('Não foi possível confirmar o envio. Tente novamente.');
-        }
-      } catch (e) {
-        errBox.innerHTML = '✕  ' + (e.message || 'Erro desconhecido.');
-        errBox.classList.remove('hidden');
-      }
-      btn.disabled = false;
-      btn.innerHTML = 'Gerar e Enviar NDA';
+        okBox.classList.add('hidden');
+      }, 4000);
     }
   </script>
 </body>
