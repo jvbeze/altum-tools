@@ -7,100 +7,46 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #0d1621 0%, #111e2e 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'DM Sans', sans-serif;
-      padding: 32px 16px;
-    }
-    .card {
-      background: #1B2B45;
-      border: 1px solid rgba(184,147,82,0.25);
-      border-radius: 4px;
-      width: 100%; max-width: 540px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-      overflow: hidden;
-    }
-    .card-header {
-      padding: 32px 36px 24px;
-      border-bottom: 1px solid rgba(184,147,82,0.2);
-      position: relative;
-    }
+    body { min-height: 100vh; background: linear-gradient(135deg, #0d1621 0%, #111e2e 100%); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; padding: 32px 16px; }
+    .card { background: #1B2B45; border: 1px solid rgba(184,147,82,0.25); border-radius: 4px; width: 100%; max-width: 540px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); overflow: hidden; }
+    .card-header { padding: 32px 36px 24px; border-bottom: 1px solid rgba(184,147,82,0.2); position: relative; }
     .logo-line { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-    .logo-mark {
-      width: 30px; height: 30px;
-      border: 1.5px solid #B89352; border-radius: 2px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .logo-mark { width: 30px; height: 30px; border: 1.5px solid #B89352; border-radius: 2px; display: flex; align-items: center; justify-content: center; }
     .logo-mark span { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 700; color: #B89352; }
     .logo-text { font-size: 11px; font-weight: 500; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
     .card-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 6px; }
     .card-subtitle { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 300; }
-    .gear-btn {
-      position: absolute; top: 30px; right: 30px;
-      background: none; border: none; cursor: pointer;
-      color: rgba(255,255,255,0.3); font-size: 20px; line-height: 1;
-      transition: color 0.2s; padding: 4px;
-    }
+    /* FIX 1: gear-btn area larger */
+    .gear-btn { position: absolute; top: 26px; right: 26px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 20px; line-height: 1; transition: color 0.2s; padding: 8px; border-radius: 4px; }
     .gear-btn:hover, .gear-btn.active { color: #B89352; }
-    .onboarding {
-      background: rgba(184,147,82,0.08);
-      border-bottom: 1px solid rgba(184,147,82,0.2);
-      padding: 16px 28px;
-      position: relative;
-    }
+    .onboarding { background: rgba(184,147,82,0.08); border-bottom: 1px solid rgba(184,147,82,0.2); padding: 16px 28px; position: relative; }
     .ob-steps { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ob-step { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 120px; }
     .ob-icon { font-size: 13px; color: #B89352; font-weight: 700; font-family: 'Cormorant Garamond', serif; flex-shrink: 0; }
     .ob-text { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.4; }
     .ob-text strong { color: rgba(255,255,255,0.8); }
     .ob-arrow { color: rgba(184,147,82,0.4); font-size: 14px; flex-shrink: 0; }
-    .ob-close {
-      position: absolute; top: 10px; right: 14px;
-      background: none; border: none; cursor: pointer;
-      color: rgba(255,255,255,0.2); font-size: 12px; transition: color 0.2s;
-    }
-    .ob-close:hover { color: rgba(255,255,255,0.5); }
+    /* FIX 2: ob-close com área de clique muito maior */
+    .ob-close { position: absolute; top: 6px; right: 8px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s; padding: 10px 12px; min-width: 36px; min-height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+    .ob-close:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
     .card-body { padding: 28px 36px 32px; }
-    .settings-panel {
-      background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(184,147,82,0.15);
-      border-radius: 3px; padding: 18px; margin-bottom: 24px;
-    }
+    .settings-panel { background: rgba(0,0,0,0.2); border: 1px solid rgba(184,147,82,0.15); border-radius: 3px; padding: 18px; margin-bottom: 24px; }
     .settings-title { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #B89352; font-weight: 500; margin-bottom: 14px; }
     .field { margin-bottom: 18px; }
     .field:last-child { margin-bottom: 0; }
     label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 8px; }
     label .req { color: #B89352; margin-left: 2px; }
-    input {
-      width: 100%; background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 3px; color: #fff;
-      font-family: 'DM Sans', sans-serif; font-size: 14px;
-      padding: 11px 14px; outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
+    input { width: 100%; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 11px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
     input:focus { border-color: rgba(184,147,82,0.6); box-shadow: 0 0 0 3px rgba(184,147,82,0.08); }
     input::placeholder { color: rgba(255,255,255,0.2); }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 22px 0; }
-    .btn-submit {
-      width: 100%;
-      background: linear-gradient(135deg, #B89352, #9a7a41);
-      border: none; border-radius: 3px; color: #fff;
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 14px; cursor: pointer; transition: opacity 0.2s;
-    }
+    .btn-submit { width: 100%; background: linear-gradient(135deg, #B89352, #9a7a41); border: none; border-radius: 3px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity 0.2s; }
     .btn-submit:hover { opacity: 0.88; }
     .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
-    .status-box {
-      border-radius: 3px; padding: 14px 16px; font-size: 13px;
-      margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; line-height: 1.5;
-    }
-    .status-ok  { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.3);  color: #86efac; }
-    .status-err { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+    .status-box { border-radius: 3px; padding: 14px 16px; font-size: 13px; margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
+    .status-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
+    .status-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
     .hidden { display: none; }
     .hint { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 10px; text-align: center; line-height: 1.5; }
     .hint a { color: rgba(184,147,82,0.6); text-decoration: none; }
@@ -116,7 +62,7 @@
       </div>
       <div class="card-title">Gerador de NDA</div>
       <div class="card-subtitle">Preencha os dados &mdash; abre seu e-mail pronto para enviar.</div>
-      <button class="gear-btn" id="gearBtn" title="Configuracoes de envio">&#9881;</button>
+      <button class="gear-btn" id="gearBtn" title="Configurações de envio">&#9881;</button>
     </div>
     <div class="onboarding" id="onboarding">
       <div class="ob-steps">
@@ -132,25 +78,26 @@
         <div class="ob-arrow">&rarr;</div>
         <div class="ob-step">
           <div class="ob-icon">&#9314;</div>
-          <div class="ob-text">Seu e-mail abre pronto &mdash; Anna no destino, <strong>JV em copia</strong>. So clicar Enviar.</div>
+          <div class="ob-text">Seu e-mail abre pronto &mdash; Anna no destino, <strong>JV em cópia</strong>. Só clicar Enviar.</div>
         </div>
       </div>
       <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <div class="settings-title">&#9881; Configuracoes de Envio</div>
+        <!-- FIX 3: acentos nos labels do painel -->
+        <div class="settings-title">&#9881; Configurações de Envio</div>
         <div class="field">
-          <label>E-mail destino (responsavel ZapSign)</label>
+          <label>E-mail destino (responsável ZapSign)</label>
           <input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" />
         </div>
         <div class="field">
-          <label>E-mail em copia (CC &mdash; JV)</label>
+          <label>E-mail em cópia (CC &mdash; JV)</label>
           <input type="email" id="cfgCC" value="jv@altumcapital.com.br" />
         </div>
       </div>
       <div class="field">
-        <label>Razao Social ou Nome Completo <span class="req">*</span></label>
+        <label>Razão Social ou Nome Completo <span class="req">*</span></label>
         <input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." />
       </div>
       <div class="field">
@@ -169,14 +116,14 @@
         </div>
       </div>
       <div class="field">
-        <label>E-mail do representante <span class="req">*</span></label>
+        <label>E-mail do Representante <span class="req">*</span></label>
         <input type="email" id="emailRep" placeholder="nome@empresa.com.br" />
       </div>
       <div class="divider"></div>
       <button class="btn-submit" id="btnSubmit" onclick="gerarEmail()">
         Gerar E-mail do NDA
       </button>
-      <p class="hint">Seu cliente de e-mail sera aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
+      <p class="hint">Seu cliente de e-mail será aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
       <div class="status-box status-ok hidden" id="statusOk"></div>
       <div class="status-box status-err hidden" id="statusErr"></div>
     </div>
@@ -189,7 +136,7 @@
 
     function gerarEmail() {
       var razaoSocial   = document.getElementById('razaoSocial').value.trim();
-      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
+      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Não informado';
       var representante = document.getElementById('representante').value.trim();
       var cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
       var emailRep      = document.getElementById('emailRep').value.trim();
@@ -202,33 +149,35 @@
       errBox.classList.add('hidden');
 
       if (!razaoSocial || !representante || !emailRep) {
-        errBox.innerHTML = '&#10005; &nbsp;Preencha os campos obrigatorios marcados com *.';
+        // FIX 4: acento em "obrigatórios" + scroll automático
+        errBox.innerHTML = '&#10005; &nbsp;Preencha os campos obrigatórios marcados com *.';
         errBox.classList.remove('hidden');
-        setTimeout(function() { errBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+        setTimeout(function() {
+          errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
         return;
       }
 
       var subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
       var nl = '\n';
-      var body = 'Ola, Anna!' + nl + nl
-        + 'Segue abaixo os dados da contraparte:' + nl + nl
-        + '* Razao Social / Nome: ' + razaoSocial + nl
-        + '* CPF / CNPJ: ' + cnpjCpf + nl
-        + '* Representante: ' + representante + nl
-        + '* Cargo: ' + cargo + nl
-        + '* E-mail: ' + emailRep + nl + nl
-        + 'Por favor, abra o modelo de NDA padrao da Altum,' + nl
-        + 'preencha com os dados acima e faca upload no ZapSign' + nl
-        + 'com os signatarios:' + nl
-        + '   -> ' + representante + ' (' + emailRep + ')' + nl
-        + '   -> Joao Victor Beze (jv@altumcapital.com.br)' + nl + nl
-        + 'Obrigado!' + nl + nl
-        + 'A. Financial Ltda.';
+      var body =
+        'Olá, Anna!' + nl + nl +
+        'Recebi um contato com potencial de negócio. Segue para você preencher o modelo de NDA e enviar via ZapSign para assinatura.' + nl + nl +
+        'DADOS DA CONTRAPARTE' + nl +
+        '\u2022 Razão Social / Nome: ' + razaoSocial + nl +
+        '\u2022 CPF / CNPJ: ' + cnpjCpf + nl +
+        '\u2022 Representante: ' + representante + nl +
+        '\u2022 Cargo: ' + cargo + nl +
+        '\u2022 E-mail para envio: ' + emailRep + nl + nl +
+        'Signatários no ZapSign:' + nl +
+        '  \u2192 ' + representante + ' (' + emailRep + ')' + nl +
+        '  \u2192 João Victor Beze (jv@altumcapital.com.br)' + nl + nl +
+        'Obrigado!';
 
-      var mailto = 'mailto:' + encodeURIComponent(dest)
-        + '?cc=' + encodeURIComponent(cc)
-        + '&subject=' + encodeURIComponent(subject)
-        + '&body=' + encodeURIComponent(body);
+      var mailto = 'mailto:' + encodeURIComponent(dest) +
+        '?cc=' + encodeURIComponent(cc) +
+        '&subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
 
       window.location.href = mailto;
 
