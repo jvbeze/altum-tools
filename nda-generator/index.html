@@ -115,8 +115,8 @@
         <span class="logo-text">Altum Capital</span>
       </div>
       <div class="card-title">Gerador de NDA</div>
-      <div class="card-subtitle">Preencha os dados — abre seu e-mail pronto para enviar.</div>
-      <button class="gear-btn" id="gearBtn" title="Configurações de envio">&#9881;</button>
+      <div class="card-subtitle">Preencha os dados &mdash; abre seu e-mail pronto para enviar.</div>
+      <button class="gear-btn" id="gearBtn" title="Configuracoes de envio">&#9881;</button>
     </div>
     <div class="onboarding" id="onboarding">
       <div class="ob-steps">
@@ -132,25 +132,25 @@
         <div class="ob-arrow">&rarr;</div>
         <div class="ob-step">
           <div class="ob-icon">&#9314;</div>
-          <div class="ob-text">Seu e-mail abre pronto — Anna no destino, <strong>JV em cópia</strong>. Só clicar Enviar.</div>
+          <div class="ob-text">Seu e-mail abre pronto &mdash; Anna no destino, <strong>JV em copia</strong>. So clicar Enviar.</div>
         </div>
       </div>
       <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <div class="settings-title">&#9881; Configurações de Envio</div>
+        <div class="settings-title">&#9881; Configuracoes de Envio</div>
         <div class="field">
-          <label>E-mail destino (responsável ZapSign)</label>
+          <label>E-mail destino (responsavel ZapSign)</label>
           <input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" />
         </div>
         <div class="field">
-          <label>E-mail em cópia (CC — JV)</label>
+          <label>E-mail em copia (CC &mdash; JV)</label>
           <input type="email" id="cfgCC" value="jv@altumcapital.com.br" />
         </div>
       </div>
       <div class="field">
-        <label>Razão Social ou Nome Completo <span class="req">*</span></label>
+        <label>Razao Social ou Nome Completo <span class="req">*</span></label>
         <input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." />
       </div>
       <div class="field">
@@ -176,7 +176,7 @@
       <button class="btn-submit" id="btnSubmit" onclick="gerarEmail()">
         Gerar E-mail do NDA
       </button>
-      <p class="hint">Seu cliente de e-mail será aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
+      <p class="hint">Seu cliente de e-mail sera aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
       <div class="status-box status-ok hidden" id="statusOk"></div>
       <div class="status-box status-err hidden" id="statusErr"></div>
     </div>
@@ -188,78 +188,55 @@
     });
 
     function gerarEmail() {
-      const razaoSocial   = document.getElementById('razaoSocial').value.trim();
-      const cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
-      const representante = document.getElementById('representante').value.trim();
-      const cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
-      const emailRep      = document.getElementById('emailRep').value.trim();
-      const dest          = document.getElementById('cfgDest').value.trim();
-      const cc            = document.getElementById('cfgCC').value.trim();
+      var razaoSocial   = document.getElementById('razaoSocial').value.trim();
+      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
+      var representante = document.getElementById('representante').value.trim();
+      var cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
+      var emailRep      = document.getElementById('emailRep').value.trim();
+      var dest          = document.getElementById('cfgDest').value.trim();
+      var cc            = document.getElementById('cfgCC').value.trim();
 
-      const okBox  = document.getElementById('statusOk');
-      const errBox = document.getElementById('statusErr');
+      var okBox  = document.getElementById('statusOk');
+      var errBox = document.getElementById('statusErr');
       okBox.classList.add('hidden');
       errBox.classList.add('hidden');
 
       if (!razaoSocial || !representante || !emailRep) {
-        errBox.innerHTML = 'x &nbsp;Preencha os campos obrigatorios marcados com *.';
+        errBox.innerHTML = '&#10005; &nbsp;Preencha os campos obrigatorios marcados com *.';
         errBox.classList.remove('hidden');
-        setTimeout(() => errBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+        setTimeout(function() { errBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
         return;
       }
 
-      const subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
-      const body =
-'Ola, Anna!
+      var subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
+      var nl = '\n';
+      var body = 'Ola, Anna!' + nl + nl
+        + 'Segue abaixo os dados da contraparte:' + nl + nl
+        + '* Razao Social / Nome: ' + razaoSocial + nl
+        + '* CPF / CNPJ: ' + cnpjCpf + nl
+        + '* Representante: ' + representante + nl
+        + '* Cargo: ' + cargo + nl
+        + '* E-mail: ' + emailRep + nl + nl
+        + 'Por favor, abra o modelo de NDA padrao da Altum,' + nl
+        + 'preencha com os dados acima e faca upload no ZapSign' + nl
+        + 'com os signatarios:' + nl
+        + '   -> ' + representante + ' (' + emailRep + ')' + nl
+        + '   -> Joao Victor Beze (jv@altumcapital.com.br)' + nl + nl
+        + 'Obrigado!' + nl + nl
+        + 'A. Financial Ltda.';
 
-'
-+ 'Segue abaixo os dados da contraparte para preenchimento e envio do NDA via ZapSign:
-
-'
-+ 'DADOS DA CONTRAPARTE
-
-'
-+ '* Razao Social / Nome: ' + razaoSocial + '
-'
-+ '* CPF / CNPJ: ' + cnpjCpf + '
-'
-+ '* Representante: ' + representante + '
-'
-+ '* Cargo: ' + cargo + '
-'
-+ '* E-mail: ' + emailRep + '
-
-'
-+ 'Por favor:
-'
-+ '1. Abra o modelo de NDA padrao da Altum
-'
-+ '2. Preencha com os dados acima
-'
-+ '3. Faca upload no ZapSign com os seguintes signatarios:
-'
-+ '   -> ' + representante + ' (' + emailRep + ')
-'
-+ '   -> Joao Victor Beze (jv@altumcapital.com.br)
-
-'
-+ 'Obrigado!
-
-'
-+ 'A. Financial Ltda.';
-
-      const mailto = 'mailto:' + encodeURIComponent(dest)
+      var mailto = 'mailto:' + encodeURIComponent(dest)
         + '?cc=' + encodeURIComponent(cc)
         + '&subject=' + encodeURIComponent(subject)
         + '&body=' + encodeURIComponent(body);
 
       window.location.href = mailto;
 
-      okBox.innerHTML = 'ok &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
+      okBox.innerHTML = '&#10003; &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
       okBox.classList.remove('hidden');
 
-      setTimeout(() => {
-        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(id => {
+      setTimeout(function() {
+        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id) {
           document.getElementById(id).value = '';
         });
         okBox.classList.add('hidden');
