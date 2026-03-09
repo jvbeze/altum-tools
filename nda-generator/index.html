@@ -124,33 +124,33 @@
           <div class="ob-icon">&#9312;</div>
           <div class="ob-text">Preencha os dados da contraparte</div>
         </div>
-        <div class="ob-arrow">&#8594;</div>
+        <div class="ob-arrow">&rarr;</div>
         <div class="ob-step">
           <div class="ob-icon">&#9313;</div>
           <div class="ob-text">Clique em <strong>Gerar E-mail do NDA</strong></div>
         </div>
-        <div class="ob-arrow">&#8594;</div>
+        <div class="ob-arrow">&rarr;</div>
         <div class="ob-step">
           <div class="ob-icon">&#9314;</div>
-          <div class="ob-text">Seu e-mail abre pronto — Anna no destino, <strong>JV em c&#243;pia</strong>. S&#243; clicar Enviar.</div>
+          <div class="ob-text">Seu e-mail abre pronto — Anna no destino, <strong>JV em cópia</strong>. Só clicar Enviar.</div>
         </div>
       </div>
       <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <div class="settings-title">&#9881; Configura&#231;&#245;es de Envio</div>
+        <div class="settings-title">&#9881; Configurações de Envio</div>
         <div class="field">
-          <label>E-mail destino (respons&#225;vel ZapSign)</label>
+          <label>E-mail destino (responsável ZapSign)</label>
           <input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" />
         </div>
         <div class="field">
-          <label>E-mail em c&#243;pia (CC &#8212; JV)</label>
+          <label>E-mail em cópia (CC — JV)</label>
           <input type="email" id="cfgCC" value="jv@altumcapital.com.br" />
         </div>
       </div>
       <div class="field">
-        <label>Raz&#227;o Social ou Nome Completo <span class="req">*</span></label>
+        <label>Razão Social ou Nome Completo <span class="req">*</span></label>
         <input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." />
       </div>
       <div class="field">
@@ -176,7 +176,7 @@
       <button class="btn-submit" id="btnSubmit" onclick="gerarEmail()">
         Gerar E-mail do NDA
       </button>
-      <p class="hint">Seu cliente de e-mail ser&#225; aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
+      <p class="hint">Seu cliente de e-mail será aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
       <div class="status-box status-ok hidden" id="statusOk"></div>
       <div class="status-box status-err hidden" id="statusErr"></div>
     </div>
@@ -188,84 +188,78 @@
     });
 
     function gerarEmail() {
-      var razaoSocial   = document.getElementById('razaoSocial').value.trim();
-      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
-      var representante = document.getElementById('representante').value.trim();
-      var cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
-      var emailRep      = document.getElementById('emailRep').value.trim();
-      var dest          = document.getElementById('cfgDest').value.trim();
-      var cc            = document.getElementById('cfgCC').value.trim();
+      const razaoSocial   = document.getElementById('razaoSocial').value.trim();
+      const cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Nao informado';
+      const representante = document.getElementById('representante').value.trim();
+      const cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
+      const emailRep      = document.getElementById('emailRep').value.trim();
+      const dest          = document.getElementById('cfgDest').value.trim();
+      const cc            = document.getElementById('cfgCC').value.trim();
 
-      var okBox  = document.getElementById('statusOk');
-      var errBox = document.getElementById('statusErr');
+      const okBox  = document.getElementById('statusOk');
+      const errBox = document.getElementById('statusErr');
       okBox.classList.add('hidden');
       errBox.classList.add('hidden');
 
       if (!razaoSocial || !representante || !emailRep) {
-        errBox.innerHTML = '✕ &nbsp;Preencha os campos obrigatórios marcados com *.';
+        errBox.innerHTML = 'x &nbsp;Preencha os campos obrigatorios marcados com *.';
         errBox.classList.remove('hidden');
+        setTimeout(() => errBox.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
         return;
       }
 
-      var subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
-      var body =
-'Olá, Anna!
+      const subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
+      const body =
+'Ola, Anna!
 
-' +
-'Segue abaixo os dados da contraparte para preenchimento e envio do NDA via ZapSign:
+'
++ 'Segue abaixo os dados da contraparte para preenchimento e envio do NDA via ZapSign:
 
-' +
-'━━━━━━━━━━━━━━━━━━━━━━
-' +
-'DADOS DA CONTRAPARTE
-' +
-'━━━━━━━━━━━━━━━━━━━━━━
+'
++ 'DADOS DA CONTRAPARTE
 
-' +
-'• Razão Social / Nome: ' + razaoSocial + '
-' +
-'• CPF / CNPJ: ' + cnpjCpf + '
-' +
-'• Representante: ' + representante + '
-' +
-'• Cargo: ' + cargo + '
-' +
-'• E-mail: ' + emailRep + '
+'
++ '* Razao Social / Nome: ' + razaoSocial + '
+'
++ '* CPF / CNPJ: ' + cnpjCpf + '
+'
++ '* Representante: ' + representante + '
+'
++ '* Cargo: ' + cargo + '
+'
++ '* E-mail: ' + emailRep + '
 
-' +
-'━━━━━━━━━━━━━━━━━━━━━━
+'
++ 'Por favor:
+'
++ '1. Abra o modelo de NDA padrao da Altum
+'
++ '2. Preencha com os dados acima
+'
++ '3. Faca upload no ZapSign com os seguintes signatarios:
+'
++ '   -> ' + representante + ' (' + emailRep + ')
+'
++ '   -> Joao Victor Beze (jv@altumcapital.com.br)
 
-' +
-'Por favor:
-' +
-'1. Abra o modelo de NDA padrão da Altum
-' +
-'2. Preencha com os dados acima
-' +
-'3. Faça upload no ZapSign com os seguintes signatários:
-' +
-'   → ' + representante + ' (' + emailRep + ')
-' +
-'   → João Victor Beze (jv@altumcapital.com.br)
+'
++ 'Obrigado!
 
-' +
-'Obrigado!
+'
++ 'A. Financial Ltda.';
 
-' +
-'A. Financial Ltda.';
-
-      var mailto = 'mailto:' + encodeURIComponent(dest)
+      const mailto = 'mailto:' + encodeURIComponent(dest)
         + '?cc=' + encodeURIComponent(cc)
         + '&subject=' + encodeURIComponent(subject)
         + '&body=' + encodeURIComponent(body);
 
       window.location.href = mailto;
 
-      okBox.innerHTML = '✓ &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
+      okBox.innerHTML = 'ok &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
       okBox.classList.remove('hidden');
 
-      setTimeout(function() {
-        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id) {
+      setTimeout(() => {
+        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(id => {
           document.getElementById(id).value = '';
         });
         okBox.classList.add('hidden');
