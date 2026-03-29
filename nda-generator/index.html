@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerador de NDA — Altum Capital</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { min-height: 100vh; background: linear-gradient(135deg, #0d1621 0%, #111e2e 100%); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; padding: 32px 16px; }
@@ -16,8 +17,7 @@
     .logo-text { font-size: 11px; font-weight: 500; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
     .card-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 6px; }
     .card-subtitle { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 300; }
-    /* FIX 1: gear-btn area larger */
-    .gear-btn { position: absolute; top: 26px; right: 26px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 20px; line-height: 1; transition: color 0.2s; padding: 8px; border-radius: 4px; }
+    .gear-btn { position: absolute; top: 26px; right: 26px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 20px; transition: color 0.2s; padding: 8px; border-radius: 4px; }
     .gear-btn:hover, .gear-btn.active { color: #B89352; }
     .onboarding { background: rgba(184,147,82,0.08); border-bottom: 1px solid rgba(184,147,82,0.2); padding: 16px 28px; position: relative; }
     .ob-steps { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -26,7 +26,6 @@
     .ob-text { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.4; }
     .ob-text strong { color: rgba(255,255,255,0.8); }
     .ob-arrow { color: rgba(184,147,82,0.4); font-size: 14px; flex-shrink: 0; }
-    /* FIX 2: ob-close com área de clique muito maior */
     .ob-close { position: absolute; top: 6px; right: 8px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 14px; transition: color 0.2s; padding: 10px 12px; min-width: 36px; min-height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
     .ob-close:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
     .card-body { padding: 28px 36px 32px; }
@@ -41,16 +40,18 @@
     input::placeholder { color: rgba(255,255,255,0.2); }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 22px 0; }
-    .btn-submit { width: 100%; background: linear-gradient(135deg, #B89352, #9a7a41); border: none; border-radius: 3px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity 0.2s; }
-    .btn-submit:hover { opacity: 0.88; }
-    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-submit { width: 100%; background: linear-gradient(135deg, #B89352, #9a7a41); border: none; border-radius: 3px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-submit:hover:not(:disabled) { opacity: 0.88; }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-label { opacity: 0.7; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .status-box { border-radius: 3px; padding: 14px 16px; font-size: 13px; margin-top: 16px; display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; }
     .status-ok { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
     .status-err { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
     .hidden { display: none; }
     .hint { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 10px; text-align: center; line-height: 1.5; }
-    .hint a { color: rgba(184,147,82,0.6); text-decoration: none; }
-    .hint a:hover { color: #B89352; }
   </style>
 </head>
 <body>
@@ -61,135 +62,85 @@
         <span class="logo-text">Altum Capital</span>
       </div>
       <div class="card-title">Gerador de NDA</div>
-      <div class="card-subtitle">Preencha os dados &mdash; abre seu e-mail pronto para enviar.</div>
+      <div class="card-subtitle">Preencha os dados &mdash; e-mail enviado automaticamente.</div>
       <button class="gear-btn" id="gearBtn" title="Configurações de envio">&#9881;</button>
     </div>
     <div class="onboarding" id="onboarding">
       <div class="ob-steps">
-        <div class="ob-step">
-          <div class="ob-icon">&#9312;</div>
-          <div class="ob-text">Preencha os dados da contraparte</div>
-        </div>
+        <div class="ob-step"><div class="ob-icon">&#9312;</div><div class="ob-text">Preencha os dados da contraparte</div></div>
         <div class="ob-arrow">&rarr;</div>
-        <div class="ob-step">
-          <div class="ob-icon">&#9313;</div>
-          <div class="ob-text">Clique em <strong>Gerar E-mail do NDA</strong></div>
-        </div>
+        <div class="ob-step"><div class="ob-icon">&#9313;</div><div class="ob-text">Clique em <strong>Enviar NDA</strong></div></div>
         <div class="ob-arrow">&rarr;</div>
-        <div class="ob-step">
-          <div class="ob-icon">&#9314;</div>
-          <div class="ob-text">Seu e-mail abre pronto &mdash; Anna no destino, <strong>JV em cópia</strong>. Só clicar Enviar.</div>
-        </div>
+        <div class="ob-step"><div class="ob-icon">&#9314;</div><div class="ob-text">E-mail disparado para Anna &mdash; <strong>JV em cópia</strong>. Sem cliente de e-mail.</div></div>
       </div>
       <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <!-- FIX 3: acentos nos labels do painel -->
         <div class="settings-title">&#9881; Configurações de Envio</div>
-        <div class="field">
-          <label>E-mail destino (responsável ZapSign)</label>
-          <input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" />
-        </div>
-        <div class="field">
-          <label>E-mail em cópia (CC &mdash; JV)</label>
-          <input type="email" id="cfgCC" value="jv@altumcapital.com.br" />
-        </div>
+        <div class="field"><label>E-mail destino (responsável ZapSign)</label><input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" /></div>
+        <div class="field"><label>E-mail em cópia (CC — JV)</label><input type="email" id="cfgCC" value="jv@altumcapital.com.br" /></div>
       </div>
-      <div class="field">
-        <label>Razão Social ou Nome Completo <span class="req">*</span></label>
-        <input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." />
-      </div>
-      <div class="field">
-        <label>CPF ou CNPJ</label>
-        <input type="text" id="cnpjCpf" placeholder="Opcional" />
-      </div>
+      <div class="field"><label>Razão Social ou Nome Completo <span class="req">*</span></label><input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." /></div>
+      <div class="field"><label>CPF ou CNPJ</label><input type="text" id="cnpjCpf" placeholder="Opcional" /></div>
       <div class="divider"></div>
       <div class="row">
-        <div class="field">
-          <label>Representante <span class="req">*</span></label>
-          <input type="text" id="representante" placeholder="Nome completo" />
-        </div>
-        <div class="field">
-          <label>Cargo</label>
-          <input type="text" id="cargo" placeholder="Rep. Legal" />
-        </div>
+        <div class="field"><label>Representante <span class="req">*</span></label><input type="text" id="representante" placeholder="Nome completo" /></div>
+        <div class="field"><label>Cargo</label><input type="text" id="cargo" placeholder="Rep. Legal" /></div>
       </div>
-      <div class="field">
-        <label>E-mail do Representante <span class="req">*</span></label>
-        <input type="email" id="emailRep" placeholder="nome@empresa.com.br" />
-      </div>
+      <div class="field"><label>E-mail do Representante <span class="req">*</span></label><input type="email" id="emailRep" placeholder="nome@empresa.com.br" /></div>
       <div class="divider"></div>
-      <button class="btn-submit" id="btnSubmit" onclick="gerarEmail()">
-        Gerar E-mail do NDA
+      <button class="btn-submit" id="btnSubmit" onclick="enviarNDA()">
+        <div class="spinner" id="spinner"></div>
+        <span class="btn-label">Enviar NDA</span>
       </button>
-      <p class="hint">Seu cliente de e-mail será aberto com tudo preenchido.<br/>Basta revisar e clicar <strong>Enviar</strong>.</p>
+      <p class="hint">E-mail disparado automaticamente &mdash; sem depender de cliente de e-mail.</p>
       <div class="status-box status-ok hidden" id="statusOk"></div>
       <div class="status-box status-err hidden" id="statusErr"></div>
     </div>
   </div>
   <script>
+    var EMAILJS_PUBLIC_KEY  = 'ULuqj-NuMuRStfuu6';
+    var EMAILJS_SERVICE_ID  = 'service_05zddvw';
+    var EMAILJS_TEMPLATE_ID = 'template_6gyr93a';
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     document.getElementById('gearBtn').addEventListener('click', function() {
       document.getElementById('settingsPanel').classList.toggle('hidden');
       this.classList.toggle('active');
     });
-
-    function gerarEmail() {
-      var razaoSocial   = document.getElementById('razaoSocial').value.trim();
-      var cnpjCpf       = document.getElementById('cnpjCpf').value.trim() || 'Não informado';
-      var representante = document.getElementById('representante').value.trim();
-      var cargo         = document.getElementById('cargo').value.trim() || 'Representante Legal';
-      var emailRep      = document.getElementById('emailRep').value.trim();
-      var dest          = document.getElementById('cfgDest').value.trim();
-      var cc            = document.getElementById('cfgCC').value.trim();
-
-      var okBox  = document.getElementById('statusOk');
-      var errBox = document.getElementById('statusErr');
-      okBox.classList.add('hidden');
-      errBox.classList.add('hidden');
-
-      if (!razaoSocial || !representante || !emailRep) {
-        // FIX 4: acento em "obrigatórios" + scroll automático
-        errBox.innerHTML = '&#10005; &nbsp;Preencha os campos obrigatórios marcados com *.';
-        errBox.classList.remove('hidden');
-        setTimeout(function() {
-          errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 50);
-        return;
-      }
-
-      var subject = 'NDA — ' + razaoSocial + ' | Preencher e enviar via ZapSign';
-      var nl = '\n';
-      var body =
-        'Olá, Anna!' + nl + nl +
-        'Recebi um contato com potencial de negócio. Segue para você preencher o modelo de NDA e enviar via ZapSign para assinatura.' + nl + nl +
-        'DADOS DA CONTRAPARTE' + nl +
-        '\u2022 Razão Social / Nome: ' + razaoSocial + nl +
-        '\u2022 CPF / CNPJ: ' + cnpjCpf + nl +
-        '\u2022 Representante: ' + representante + nl +
-        '\u2022 Cargo: ' + cargo + nl +
-        '\u2022 E-mail para envio: ' + emailRep + nl + nl +
-        'Signatários no ZapSign:' + nl +
-        '  \u2192 ' + representante + ' (' + emailRep + ')' + nl +
-        '  \u2192 João Victor Beze (jv@altumcapital.com.br)' + nl + nl +
-        'Obrigado!';
-
-      var mailto = 'mailto:' + encodeURIComponent(dest) +
-        '?cc=' + encodeURIComponent(cc) +
-        '&subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(body);
-
-      window.location.href = mailto;
-
-      okBox.innerHTML = '&#10003; &nbsp;Seu cliente de e-mail foi aberto com tudo preenchido. Revise e clique <strong>Enviar</strong>.';
-      okBox.classList.remove('hidden');
-
-      setTimeout(function() {
-        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id) {
-          document.getElementById(id).value = '';
-        });
-        okBox.classList.add('hidden');
-      }, 4000);
+    function setLoading(on) {
+      var btn = document.getElementById('btnSubmit');
+      if (on) { btn.disabled=true; btn.classList.add('loading'); btn.querySelector('.btn-label').textContent='Enviando...'; }
+      else { btn.disabled=false; btn.classList.remove('loading'); btn.querySelector('.btn-label').textContent='Enviar NDA'; }
+    }
+    function showMsg(type, html) {
+      var ok=document.getElementById('statusOk'), err=document.getElementById('statusErr');
+      ok.classList.add('hidden'); err.classList.add('hidden');
+      var box=(type==='ok')?ok:err;
+      box.innerHTML=html; box.classList.remove('hidden');
+      setTimeout(function(){box.scrollIntoView({behavior:'smooth',block:'center'});},50);
+    }
+    function enviarNDA() {
+      var r=document.getElementById('razaoSocial').value.trim();
+      var c=document.getElementById('cnpjCpf').value.trim()||'Não informado';
+      var rep=document.getElementById('representante').value.trim();
+      var cargo=document.getElementById('cargo').value.trim()||'Representante Legal';
+      var email=document.getElementById('emailRep').value.trim();
+      var dest=document.getElementById('cfgDest').value.trim();
+      var cc=document.getElementById('cfgCC').value.trim();
+      if(!r||!rep||!email){showMsg('err','&#10005; &nbsp;Preencha os campos obrigatórios marcados com *.');return;}
+      setLoading(true);
+      emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+        to_email:dest, cc_email:cc, razao_social:r,
+        cnpj_cpf:c, representante:rep, cargo:cargo, email_rep:email
+      }).then(function(){
+        setLoading(false);
+        showMsg('ok','&#10003; &nbsp;E-mail enviado para <strong>'+dest+'</strong> com cópia para JV.');
+        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id){document.getElementById(id).value='';});
+      }).catch(function(e){
+        setLoading(false);
+        showMsg('err','&#10005; &nbsp;Erro: '+((e&&e.text)?e.text:JSON.stringify(e)));
+      });
     }
   </script>
 </body>
