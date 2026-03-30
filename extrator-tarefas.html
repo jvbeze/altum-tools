@@ -375,7 +375,6 @@
 const DB_ID   = "30a2f6d8-9721-806d-aa25-000b1c0d5ef1";
 const JV_ID   = "309d872b-594c-81f1-b0ed-00023fc6f2e7";
 const MODEL   = "claude-sonnet-4-20250514";
-const NOTION_MCP_URL = "https://mcp.notion.com/mcp";
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let state = {
@@ -395,10 +394,9 @@ let state = {
 // keys pre-configured
 
 // ─── API HELPERS ──────────────────────────────────────────────────────────────
-async function callAnthropic(messages, system, mcpServers = []) {
+async function callAnthropic(messages, system) {
   const body = { model: MODEL, max_tokens: 1000, messages };
   if (system) body.system = system;
-  if (mcpServers.length) body.mcp_servers = mcpServers;
 
   const headers = {
     "Content-Type": "application/json",
@@ -417,40 +415,18 @@ function getText(content) {
   return (content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
 }
 
-// MCP loop — handles tool_use stop_reason
-async function callWithMCP(messages, system, token) {
-  const mcpServers = [{
-    type: "url",
-    url: NOTION_MCP_URL,
-    name: "notion",
-    authorization_token: token
-  }];
+// Criação via Cloudflare Worker (proxy Notion API — sem CORS, token server-side)
+const WORKER_URL = "https://altum-notion-proxy.altumcapital.workers.dev";
 
-  let msgs = [...messages];
-  for (let i = 0; i < 8; i++) {
-    const data = await callAnthropic(msgs, system, mcpServers);
-    if (data.error) throw new Error(data.error.message);
-
-    msgs.push({ role: "assistant", content: data.content });
-
-    if (data.stop_reason === "end_turn") {
-      return getText(data.content);
-    }
-    if (data.stop_reason === "tool_use") {
-      const mcpResults = data.content.filter(b => b.type === "mcp_tool_result");
-      if (mcpResults.length > 0) {
-        msgs.push({
-          role: "user",
-          content: mcpResults.map(r => ({
-            type: "tool_result",
-            tool_use_id: r.tool_use_id,
-            content: r.content
-          }))
-        });
-      } else break;
-    } else return getText(data.content);
-  }
-  throw new Error("Timeout no loop MCP");
+async function createTaskInNotion(task) {
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(task),
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || `HTTP ${res.status}`);
+  return data.url || "✓ Tarefa criada no AltumOS";
 }
 
 async function extractTasks(text) {
@@ -520,17 +496,6 @@ function renderSetup() {
         <label class="field-label">Anthropic API Key</label>
         <input type="password" id="setup-anthropic" value="${s.anthropicKey}" placeholder="sk-ant-api03-...">
         <div class="field-hint">Obtenha em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a></div>
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Notion Integration Token</label>
-        <input type="password" id="setup-notion" value="${s.notionToken}" placeholder="secret_...">
-        <div class="field-hint">
-          1. Acesse <a href="https://www.notion.so/profile/integrations" target="_blank">notion.so/profile/integrations</a><br>
-          2. Crie uma integração "AltumOS Extrator"<br>
-          3. Copie o Internal Integration Secret<br>
-          4. Abra o banco <b>Tarefas</b> no Notion → ··· → Connections → adicione a integração
-        </div>
       </div>
 
       <button class="btn btn-primary" id="setup-save" style="width:100%;margin-top:4px">
