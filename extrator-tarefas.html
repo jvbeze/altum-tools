@@ -6,757 +6,303 @@
 <title>Extrator de Tarefas — AltumOS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
   :root {
-    --bg: #0a0a0a;
-    --surface: #111;
-    --surface2: #181818;
-    --border: #222;
-    --border-hi: #333;
-    --text: #e8e8e8;
-    --text2: #888;
-    --text3: #555;
-    --gold: #c9a84c;
-    --gold-dim: #7a6030;
-    --green: #2d7a4f;
-    --green-text: #4dbb80;
-    --red: #7a2d2d;
-    --red-text: #e06060;
-    --radius: 6px;
-    --radius-lg: 10px;
+    --bg:#0a0a0a;--surface:#111;--surface2:#181818;
+    --border:#222;--border-hi:#333;
+    --text:#e8e8e8;--text2:#888;--text3:#555;
+    --gold:#c9a84c;--gold-dim:#7a6030;
+    --green-bg:rgba(45,122,79,.25);--green-border:#2d7a4f;--green-text:#4dbb80;
+    --red-bg:rgba(122,45,45,.25);--red-border:#7a2d2d;--red-text:#e06060;
+    --warn-text:#c9a84c;
+    --r:6px;--rl:10px;
   }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+  #app{max-width:720px;margin:0 auto;padding:32px 24px 80px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-mark{width:28px;height:28px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#000}
+  .logo-text{font-size:13px;font-weight:500;color:var(--text2);letter-spacing:.5px;text-transform:uppercase}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }
+  .steps{display:flex;align-items:center;gap:0;margin-bottom:28px}
+  .step-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+  .step-item.active{color:var(--gold)}
+  .step-item.done{color:var(--text2)}
+  .step-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0}
+  .step-item.active .step-dot{background:var(--gold)}
+  .step-item.done .step-dot{background:var(--text2)}
+  .step-sep{flex:1;height:1px;background:var(--border);margin:0 10px;min-width:20px}
 
-  #app {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 32px 24px 80px;
-  }
+  textarea,input[type="text"]{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;padding:8px 12px;outline:none;transition:border-color .15s;resize:vertical}
+  textarea:focus,input[type="text"]:focus{border-color:var(--gold-dim)}
+  select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:12px;padding:5px 28px 5px 8px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
 
-  /* Header */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .logo-mark {
-    width: 28px; height: 28px;
-    background: var(--gold);
-    border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; font-weight: 500;
-    color: #000;
-    letter-spacing: -0.5px;
-  }
-  .logo-text {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text2);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .settings-btn {
-    background: none; border: 1px solid var(--border);
-    color: var(--text3); cursor: pointer;
-    padding: 5px 10px; border-radius: var(--radius);
-    font-family: inherit; font-size: 12px;
-    transition: border-color 0.15s, color 0.15s;
-  }
-  .settings-btn:hover { border-color: var(--border-hi); color: var(--text2); }
+  .btn{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;font-weight:500;padding:9px 20px;border-radius:var(--r);cursor:pointer;transition:all .15s;border:1px solid transparent}
+  .btn-primary{background:var(--gold);color:#000;border-color:var(--gold)}
+  .btn-primary:hover{background:#d4b055}
+  .btn-primary:disabled{background:var(--gold-dim);color:#555;cursor:not-allowed}
+  .btn-ghost{background:none;border-color:var(--border);color:var(--text2)}
+  .btn-ghost:hover{border-color:var(--border-hi);color:var(--text)}
 
-  /* Steps */
-  .steps {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    margin-bottom: 28px;
-  }
-  .step-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text3);
-    font-weight: 400;
-  }
-  .step-item.active { color: var(--gold); }
-  .step-item.done { color: var(--text2); }
-  .step-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--text3);
-    flex-shrink: 0;
-  }
-  .step-item.active .step-dot { background: var(--gold); }
-  .step-item.done .step-dot { background: var(--text2); }
-  .step-sep {
-    flex: 1; height: 1px;
-    background: var(--border);
-    margin: 0 10px;
-    min-width: 20px;
-  }
+  .source-tabs{display:flex;gap:4px;margin-bottom:12px}
+  .tab-btn{background:none;border:1px solid var(--border);color:var(--text2);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:12px;padding:5px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
+  .tab-btn.active{border-color:var(--gold-dim);color:var(--gold);background:rgba(201,168,76,.07)}
+  .tab-btn:hover:not(.active){border-color:var(--border-hi);color:var(--text)}
 
-  /* Setup modal */
-  .setup-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 100;
-    padding: 24px;
-  }
-  .setup-card {
-    background: var(--surface);
-    border: 1px solid var(--border-hi);
-    border-radius: var(--radius-lg);
-    padding: 28px 32px;
-    max-width: 460px;
-    width: 100%;
-  }
-  .setup-title {
-    font-size: 16px; font-weight: 500;
-    margin-bottom: 6px;
-  }
-  .setup-subtitle {
-    font-size: 13px; color: var(--text2);
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
-  .field-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 6px;
-    display: block;
-  }
-  .field-group { margin-bottom: 18px; }
-  .field-hint {
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 5px;
-    line-height: 1.5;
-  }
-  .field-hint a { color: var(--gold); text-decoration: none; }
-  .field-hint a:hover { text-decoration: underline; }
+  .error-box{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--r);color:var(--red-text);padding:10px 14px;font-size:13px;margin-top:10px;line-height:1.5}
 
-  /* Inputs */
-  input[type="text"], input[type="password"], textarea, select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--gold-dim);
-  }
-  textarea {
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    resize: vertical;
-    line-height: 1.6;
-  }
-  select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    padding-right: 28px;
-  }
+  .task-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px}
+  .task-card.status-ok{border-left:3px solid var(--green-border)}
+  .task-card.status-err{border-left:3px solid var(--red-border)}
+  .task-card.status-loading{border-left:3px solid var(--gold-dim)}
+  .task-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+  .task-check{margin-top:3px;flex-shrink:0;cursor:pointer;accent-color:var(--gold)}
+  .task-title-input{flex:1;font-size:14px;font-weight:500}
+  .task-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .task-field{display:flex;flex-direction:column;gap:4px}
+  .task-field label{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+  .task-status-msg{font-size:12px;color:var(--text2);margin-top:8px;line-height:1.4}
+  .task-status-msg.ok{color:var(--green-text)}
+  .task-status-msg.err{color:var(--red-text)}
+  .task-status-msg.loading{color:var(--warn-text)}
 
-  /* Buttons */
-  .btn {
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 9px 20px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid transparent;
-  }
-  .btn-primary {
-    background: var(--gold);
-    color: #000;
-    border-color: var(--gold);
-  }
-  .btn-primary:hover { background: #d4b055; }
-  .btn-primary:disabled { background: var(--gold-dim); color: #555; cursor: not-allowed; }
-  .btn-ghost {
-    background: none;
-    border-color: var(--border);
-    color: var(--text2);
-  }
-  .btn-ghost:hover { border-color: var(--border-hi); color: var(--text); }
-  .btn-danger {
-    background: none;
-    border-color: var(--red);
-    color: var(--red-text);
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-  .btn-danger:hover { background: var(--red); }
+  .actions-bar{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+  .count-label{font-size:12px;color:var(--text2)}
 
-  /* Source tabs */
-  .source-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 14px;
-  }
-  .tab-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text2);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    padding: 5px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .tab-btn.active {
-    border-color: var(--gold-dim);
-    color: var(--gold);
-    background: rgba(201, 168, 76, 0.07);
-  }
-  .tab-btn:hover:not(.active) { border-color: var(--border-hi); color: var(--text); }
+  .spin{display:inline-block;width:12px;height:12px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* Error */
-  .error-box {
-    background: rgba(122, 45, 45, 0.25);
-    border: 1px solid var(--red);
-    border-radius: var(--radius);
-    color: var(--red-text);
-    padding: 10px 14px;
-    font-size: 13px;
-    margin-top: 10px;
-    line-height: 1.5;
-  }
+  .badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px}
+  .badge-ok{background:var(--green-bg);color:var(--green-text);border:1px solid var(--green-border)}
+  .badge-err{background:var(--red-bg);color:var(--red-text);border:1px solid var(--red-border)}
+  .notion-link{color:var(--gold);text-decoration:none;font-size:12px}
+  .notion-link:hover{text-decoration:underline}
 
-  /* Task cards */
-  .task-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    transition: border-color 0.15s;
-  }
-  .task-card:has(input[type="checkbox"]:not(:checked)) {
-    opacity: 0.4;
-  }
-  .task-card.status-ok { border-left: 3px solid var(--green); }
-  .task-card.status-err { border-left: 3px solid var(--red); }
-  .task-card.status-loading { border-left: 3px solid var(--gold-dim); }
-
-  .task-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .task-check { margin-top: 2px; flex-shrink: 0; cursor: pointer; accent-color: var(--gold); }
-  .task-title-input {
-    flex: 1;
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text);
-  }
-  .task-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .task-field { display: flex; flex-direction: column; gap: 4px; }
-  .task-field label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--text3);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
-  .task-field input, .task-field select {
-    font-size: 12px; padding: 5px 8px;
-  }
-  .task-status-msg {
-    font-size: 12px;
-    color: var(--text2);
-    margin-top: 8px;
-    line-height: 1.4;
-  }
-  .task-status-msg.ok { color: var(--green-text); }
-  .task-status-msg.err { color: var(--red-text); }
-  .task-status-msg.loading { color: var(--gold); }
-
-  /* Actions bar */
-  .actions-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-  }
-  .actions-left { display: flex; align-items: center; gap: 12px; }
-  .count-label { font-size: 12px; color: var(--text2); }
-
-  /* Loading spinner */
-  .spin {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 1.5px solid var(--gold-dim);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin-right: 6px;
-    vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Status badge */
-  .badge {
-    display: inline-block;
-    font-size: 10px; font-weight: 500;
-    padding: 2px 7px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .badge-ok { background: var(--green); color: var(--green-text); }
-  .badge-err { background: var(--red); color: var(--red-text); }
-
-  /* Notion link */
-  .notion-link {
-    color: var(--gold);
-    text-decoration: none;
-    font-size: 12px;
-  }
-  .notion-link:hover { text-decoration: underline; }
-
-  @media (max-width: 520px) {
-    .task-fields { grid-template-columns: 1fr 1fr; }
-    #app { padding: 20px 16px 60px; }
-  }
+  @media(max-width:520px){.task-fields{grid-template-columns:1fr 1fr}#app{padding:20px 16px 60px}}
 </style>
 </head>
 <body>
 <div id="app"></div>
-
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const DB_ID   = "30a2f6d8-9721-80b9-aedc-dbedb2f9394a";
-const JV_ID   = "309d872b-594c-81f1-b0ed-00023fc6f2e7";
-const MODEL   = "claude-sonnet-4-20250514";
+const WORKER = "https://altum-notion-proxy.altumcapital.workers.dev";
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
 let state = {
-  step: 0,  // 0=input 1=review 2=creating 3=done
-  source: "whatsapp",
-  inputText: "",
-  tasks: [],
-  statuses: {},
-  extracting: false,
-  error: null,
-  showSetup: false,
-  anthropicKey: localStorage.getItem("altum_anthropic_key") || "",
+  step: 0, source: "whatsapp", inputText: "",
+  tasks: [], statuses: {}, extracting: false, error: null,
 };
 
-// Show setup on first run
-// keys pre-configured
-
-// ─── API HELPERS ──────────────────────────────────────────────────────────────
-async function callAnthropic(messages, system) {
-  const body = { model: MODEL, max_tokens: 1000, messages };
-  if (system) body.system = system;
-
-  const headers = {
-    "Content-Type": "application/json",
-    "x-api-key": state.anthropicKey,
-    "anthropic-version": "2023-06-01",
-  };
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST", headers, body: JSON.stringify(body)
-  });
-  return res.json();
-}
-
-function getText(content) {
-  return (content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
-}
-
-// Criação via Cloudflare Worker (proxy Notion API — sem CORS, token server-side)
-const WORKER_URL = "https://altum-notion-proxy.altumcapital.workers.dev";
-
-async function createTaskInNotion(task) {
-  const res = await fetch(WORKER_URL, {
+// ── API ───────────────────────────────────────────────────────────────────────
+async function apiExtract(text, source) {
+  const res = await fetch(WORKER, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(task),
+    body: JSON.stringify({ action: "extract", text, source }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+  return data.tasks;
+}
+
+async function apiCreate(task) {
+  const res = await fetch(WORKER, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "create", ...task }),
   });
   const data = await res.json();
   if (!data.success) throw new Error(data.error || `HTTP ${res.status}`);
-  return data.url || "✓ Tarefa criada no AltumOS";
+  return data.url || "✓ Criado no AltumOS";
 }
 
-async function extractTasks(text) {
-  const sys = `Você extrai tarefas do AltumOS da Altum Capital (MFO em Brasília-DF). Analise o texto (conversa WhatsApp ou transcrição de reunião) e identifique TODAS as ações, compromissos e follow-ups.
-Retorne APENAS um JSON array válido, sem markdown, sem texto extra:
-[{
-  "titulo": "Título objetivo da tarefa",
-  "descricao": "Contexto ou null",
-  "responsavel": "Nome (padrão: JV se não especificado)",
-  "prazo": "YYYY-MM-DD ou null",
-  "prioridade": "🟢 Baixa|🟡 Média|🔴 Alta (inferir pelo contexto)",
-  "vertical": "Wealth|IB / M&A|Seguros/Consórcios/Crédito|Interno Altum|Comercial|null",
-  "tipo": "🎯 Captação|⚙️ Operação|📊 Gestão|🚀 Desenvolvimento|null"
-}]`;
-
-  const data = await callAnthropic(
-    [{ role: "user", content: `Extraia as tarefas:\n\n${text}` }],
-    sys
-  );
-  if (data.error) throw new Error(data.error.message);
-  const raw = getText(data.content).replace(/```json\n?/g,"").replace(/```\n?/g,"").trim();
-  return JSON.parse(raw);
-}
-
-
-
-// ─── RENDER ──────────────────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────────────────────
 function render() {
-  const s = state;
-  document.getElementById("app").innerHTML = `
-    ${s.showSetup ? renderSetup() : ""}
-    ${renderHeader()}
-    ${renderSteps()}
-    ${s.step === 0 ? renderInput() : ""}
-    ${s.step === 1 ? renderReview() : ""}
-    ${s.step >= 2 ? renderProgress() : ""}
-  `;
+  document.getElementById("app").innerHTML =
+    renderHeader() + renderSteps() +
+    (state.step === 0 ? renderInput() : "") +
+    (state.step === 1 ? renderReview() : "") +
+    (state.step >= 2 ? renderProgress() : "");
   bindEvents();
 }
 
-function renderSetup() {
-  return `
-  <div class="setup-overlay" id="setup-overlay">
-    <div class="setup-card">
-      <div class="setup-title">Configuração inicial</div>
-      <div class="setup-subtitle">Informe sua Anthropic API Key para usar o Extrator de Tarefas. A integração com Notion já está configurada.</div>
-
-      <div class="field-group">
-        <label class="field-label">Anthropic API Key</label>
-        <input type="password" id="setup-anthropic" value="${s.anthropicKey}" placeholder="sk-ant-api03-...">
-        <div class="field-hint">Obtenha em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a></div>
-      </div>
-
-      <button class="btn btn-primary" id="setup-save" style="width:100%;margin-top:4px">
-        Salvar e continuar
-      </button>
-    </div>
-  </div>`;
-}
-
 function renderHeader() {
-  return `
-  <div class="header">
+  return `<div class="header">
     <div class="logo">
       <div class="logo-mark">A</div>
       <div class="logo-text">AltumOS · Extrator de Tarefas</div>
     </div>
-    <button class="settings-btn" id="btn-settings">Configurações</button>
   </div>`;
 }
 
 function renderSteps() {
-  const steps = ["Texto", "Revisar", "Criar"];
-  const s = state.step;
-  return `
-  <div class="steps">
-    ${steps.map((label, i) => `
-      <div class="step-item ${s === i ? "active" : s > i ? "done" : ""}">
-        <div class="step-dot"></div>
-        <span>${label}</span>
-      </div>
-      ${i < steps.length - 1 ? '<div class="step-sep"></div>' : ""}
-    `).join("")}
-  </div>`;
+  const labels = ["Texto","Revisar","Criar"];
+  return `<div class="steps">${labels.map((l,i)=>`
+    <div class="step-item ${state.step===i?"active":state.step>i?"done":""}">
+      <div class="step-dot"></div><span>${l}</span>
+    </div>${i<2?'<div class="step-sep"></div>':""}
+  `).join("")}</div>`;
 }
 
 function renderInput() {
-  const placeholders = {
-    whatsapp: "Cole a conversa do WhatsApp aqui...",
-    reuniao: "Cole a ata ou transcrição da reunião...",
-    tldv: "Cole o transcript do TLDV aqui..."
-  };
+  const ph = { whatsapp:"Cole a conversa do WhatsApp...", reuniao:"Cole a ata ou transcrição da reunião...", tldv:"Cole o transcript do TLDV..." };
   return `
   <div class="source-tabs">
-    ${[["whatsapp","WhatsApp"],["reuniao","Reunião"],["tldv","TLDV"]].map(([v,l]) =>
-      `<button class="tab-btn ${state.source === v ? "active" : ""}" data-source="${v}">${l}</button>`
+    ${[["whatsapp","WhatsApp"],["reuniao","Reunião"],["tldv","TLDV"]].map(([v,l])=>
+      `<button class="tab-btn${state.source===v?" active":""}" data-source="${v}">${l}</button>`
     ).join("")}
   </div>
-  <textarea id="input-text" rows="12" placeholder="${placeholders[state.source]}">${state.inputText}</textarea>
-  ${state.error ? `<div class="error-box">${state.error}</div>` : ""}
+  <textarea id="input-text" rows="12" placeholder="${ph[state.source]}">${esc(state.inputText)}</textarea>
+  ${state.error?`<div class="error-box">${esc(state.error)}</div>`:""}
   <div class="actions-bar">
-    <span class="count-label">${state.inputText.trim() ? `${state.inputText.length} caracteres` : "Cole o texto acima"}</span>
-    <button class="btn btn-primary" id="btn-extract" ${!state.inputText.trim() || state.extracting ? "disabled" : ""}>
-      ${state.extracting ? `<span class="spin"></span>Extraindo...` : "Extrair tarefas →"}
+    <span class="count-label">${state.inputText.trim()?`${state.inputText.length} caracteres`:"Cole o texto acima"}</span>
+    <button class="btn btn-primary" id="btn-extract" ${!state.inputText.trim()||state.extracting?"disabled":""}>
+      ${state.extracting?`<span class="spin"></span>Extraindo...`:"Extrair tarefas →"}
     </button>
   </div>`;
 }
 
 function renderReview() {
-  const selected = state.tasks.filter(t => t._selected).length;
+  const sel = state.tasks.filter(t=>t._sel).length;
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <button class="btn btn-ghost" id="btn-back" style="padding:5px 12px;font-size:12px">← Voltar</button>
-    <span class="count-label">${selected} de ${state.tasks.length} selecionada${selected !== 1 ? "s" : ""}</span>
+    <span class="count-label">${sel} de ${state.tasks.length} selecionada${sel!==1?"s":""}</span>
   </div>
-  ${state.tasks.map(task => `
-    <div class="task-card" id="card-${task._id}">
+  ${state.tasks.map(t=>`
+    <div class="task-card" style="${t._sel?"":"opacity:.4"}">
       <div class="task-header">
-        <input type="checkbox" class="task-check" data-id="${task._id}" ${task._selected ? "checked" : ""}>
-        <input type="text" class="task-title-input" data-id="${task._id}" data-field="titulo" value="${escHtml(task.titulo)}">
+        <input type="checkbox" class="task-check" data-id="${t._id}" ${t._sel?"checked":""}>
+        <input type="text" class="task-title-input" data-id="${t._id}" data-field="titulo" value="${esc(t.titulo)}">
       </div>
       <div class="task-fields">
-        <div class="task-field">
-          <label>Responsável</label>
-          <input type="text" data-id="${task._id}" data-field="responsavel" value="${escHtml(task.responsavel || "JV")}">
+        <div class="task-field"><label>Responsável</label>
+          <input type="text" data-id="${t._id}" data-field="responsavel" value="${esc(t.responsavel||"JV")}">
         </div>
-        <div class="task-field">
-          <label>Prazo</label>
-          <input type="text" data-id="${task._id}" data-field="prazo" value="${task.prazo || ""}" placeholder="AAAA-MM-DD">
+        <div class="task-field"><label>Prazo</label>
+          <input type="text" data-id="${t._id}" data-field="prazo" value="${t.prazo||""}" placeholder="AAAA-MM-DD">
         </div>
-        <div class="task-field">
-          <label>Prioridade</label>
-          <select data-id="${task._id}" data-field="prioridade">
-            ${["🟢 Baixa","🟡 Média","🔴 Alta"].map(o =>
-              `<option ${task.prioridade === o ? "selected" : ""}>${o}</option>`
-            ).join("")}
+        <div class="task-field"><label>Prioridade</label>
+          <select data-id="${t._id}" data-field="prioridade">
+            ${["🟢 Baixa","🟡 Média","🔴 Alta"].map(o=>`<option${t.prioridade===o?" selected":""}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="task-field">
-          <label>Vertical</label>
-          <select data-id="${task._id}" data-field="vertical">
+        <div class="task-field"><label>Vertical</label>
+          <select data-id="${t._id}" data-field="vertical">
             <option value="">—</option>
-            ${["Wealth","IB / M&A","Seguros/Consórcios/Crédito","Interno Altum","Comercial"].map(o =>
-              `<option ${task.vertical === o ? "selected" : ""}>${o}</option>`
-            ).join("")}
+            ${["Wealth","IB / M&A","Seguros/Consórcios/Crédito","Interno Altum","Comercial"].map(o=>`<option${t.vertical===o?" selected":""}>${o}</option>`).join("")}
           </select>
         </div>
-        <div class="task-field">
-          <label>Tipo</label>
-          <select data-id="${task._id}" data-field="tipo">
+        <div class="task-field"><label>Tipo</label>
+          <select data-id="${t._id}" data-field="tipo">
             <option value="">—</option>
-            ${["🎯 Captação","⚙️ Operação","📊 Gestão","🚀 Desenvolvimento"].map(o =>
-              `<option ${task.tipo === o ? "selected" : ""}>${o}</option>`
-            ).join("")}
+            ${["🎯 Captação","⚙️ Operação","📊 Gestão","🚀 Desenvolvimento"].map(o=>`<option${t.tipo===o?" selected":""}>${o}</option>`).join("")}
           </select>
         </div>
       </div>
     </div>
   `).join("")}
-  ${state.error ? `<div class="error-box">${state.error}</div>` : ""}
+  ${state.error?`<div class="error-box">${esc(state.error)}</div>`:""}
   <div class="actions-bar">
-    <span class="count-label">${selected} tarefa${selected !== 1 ? "s" : ""} para criar</span>
-    <button class="btn btn-primary" id="btn-create" ${selected === 0 ? "disabled" : ""}>
-      Criar no AltumOS →
-    </button>
+    <span class="count-label">${sel} tarefa${sel!==1?"s":""} para criar</span>
+    <button class="btn btn-primary" id="btn-create" ${sel===0?"disabled":""}>Criar no AltumOS →</button>
   </div>`;
 }
 
 function renderProgress() {
-  const pending = state.tasks.filter(t => t._selected);
-  const done = Object.values(state.statuses).filter(s => s.status !== "loading").length;
-  const total = pending.length;
-  const allDone = done === total;
-
+  const pending = state.tasks.filter(t=>t._sel);
+  const done = Object.values(state.statuses).filter(s=>s.s!=="loading").length;
+  const allDone = done===pending.length;
   return `
   <div style="margin-bottom:16px">
     <div style="font-size:12px;color:var(--text2);margin-bottom:8px">
-      ${allDone ? `✓ ${done} tarefa${done !== 1 ? "s" : ""} processada${done !== 1 ? "s" : ""}` : `<span class="spin"></span>Criando ${done}/${total}...`}
+      ${allDone?`✓ ${done} tarefa${done!==1?"s":""} processada${done!==1?"s":""}`:`<span class="spin"></span>Criando ${done}/${pending.length}...`}
     </div>
     <div style="height:2px;background:var(--border);border-radius:1px;overflow:hidden">
-      <div style="height:100%;background:var(--gold);width:${total ? (done/total*100) : 0}%;transition:width 0.3s"></div>
+      <div style="height:100%;background:var(--gold);width:${pending.length?(done/pending.length*100):0}%;transition:width .3s"></div>
     </div>
   </div>
-
-  ${pending.map(task => {
-    const s = state.statuses[task._id];
-    const statusCls = s ? (s.status === "ok" ? "status-ok" : s.status === "err" ? "status-err" : "status-loading") : "";
-    return `
-    <div class="task-card ${statusCls}">
-      <div class="task-header" style="align-items:center">
-        <div style="font-size:13px;font-weight:500;flex:1">${escHtml(task.titulo)}</div>
-        ${s ? `<span class="badge badge-${s.status === "ok" ? "ok" : s.status === "err" ? "err" : ""}">${s.status === "loading" ? "..." : s.status === "ok" ? "ok" : "erro"}</span>` : ""}
+  ${pending.map(t=>{
+    const s=state.statuses[t._id];
+    const cls=s?s.s==="ok"?"status-ok":s.s==="err"?"status-err":"status-loading":"";
+    const notionUrl=s?.msg&&s.msg.startsWith("https://")&&s.msg.includes("notion.so")?s.msg:null;
+    return `<div class="task-card ${cls}">
+      <div class="task-header" style="align-items:center;margin-bottom:0">
+        <div style="font-size:13px;font-weight:500;flex:1">${esc(t.titulo)}</div>
+        ${s?`<span class="badge badge-${s.s==="ok"?"ok":s.s==="err"?"err":""}">${s.s==="loading"?"...":s.s==="ok"?"✓":"erro"}</span>`:""}
       </div>
-      ${s?.message ? `<div class="task-status-msg ${s.status}">${extractNotionUrl(s.message) ? `<a class="notion-link" href="${extractNotionUrl(s.message)}" target="_blank">Abrir no Notion ↗</a>` : s.message.slice(0, 160)}</div>` : ""}
+      ${s?.msg?`<div class="task-status-msg ${s.s}">${notionUrl?`<a class="notion-link" href="${notionUrl}" target="_blank">Abrir no Notion ↗</a>`:esc(s.msg.slice(0,160))}</div>`:""}
     </div>`;
   }).join("")}
-
-  ${allDone ? `
-  <div class="actions-bar">
-    <span class="count-label">${Object.values(state.statuses).filter(s=>s.status==="ok").length} criadas com sucesso</span>
+  ${allDone?`<div class="actions-bar">
+    <span class="count-label">${Object.values(state.statuses).filter(s=>s.s==="ok").length} criadas · ${Object.values(state.statuses).filter(s=>s.s==="err").length} erro${Object.values(state.statuses).filter(s=>s.s==="err").length!==1?"s":""}</span>
     <button class="btn btn-primary" id="btn-reset">Nova extração</button>
-  </div>` : ""}`;
+  </div>`:""}`;
 }
 
-// ─── EVENTS ──────────────────────────────────────────────────────────────────
+// ── EVENTS ────────────────────────────────────────────────────────────────────
 function bindEvents() {
-  // Settings
-  document.getElementById("btn-settings")?.addEventListener("click", () => {
-    state.showSetup = true; render();
+  document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>{state.source=b.dataset.source;render()}));
+
+  const ta=document.getElementById("input-text");
+  if(ta) ta.addEventListener("input",e=>{
+    state.inputText=e.target.value;
+    const lbl=document.querySelector(".count-label");
+    if(lbl&&state.step===0) lbl.textContent=state.inputText.trim()?`${state.inputText.length} caracteres`:"Cole o texto acima";
+    const btn=document.getElementById("btn-extract");
+    if(btn) btn.disabled=!state.inputText.trim()||state.extracting;
   });
 
-  // Setup save
-  document.getElementById("setup-save")?.addEventListener("click", () => {
-    const ak = document.getElementById("setup-anthropic").value.trim();
-    if (!ak) { alert("Informe a Anthropic API Key."); return; }
-    state.anthropicKey = ak;
-    localStorage.setItem("altum_anthropic_key", ak);
-    state.showSetup = false;
-    render();
-  });
-
-  // Source tabs
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.source = btn.dataset.source;
-      render();
-    });
-  });
-
-  // Input text - live update
-  document.getElementById("input-text")?.addEventListener("input", e => {
-    state.inputText = e.target.value;
-    // update count label live without full render
-    const lbl = document.querySelector(".count-label");
-    if (lbl && state.step === 0) {
-      lbl.textContent = state.inputText.trim() ? `${state.inputText.length} caracteres` : "Cole o texto acima";
-    }
-    const btn = document.getElementById("btn-extract");
-    if (btn) btn.disabled = !state.inputText.trim() || state.extracting;
-  });
-
-  // Extract
-  document.getElementById("btn-extract")?.addEventListener("click", async () => {
-    if (!state.anthropicKey) { state.showSetup = true; render(); return; }
-    state.extracting = true; state.error = null;
-    render();
+  document.getElementById("btn-extract")?.addEventListener("click",async()=>{
+    if(!state.inputText.trim()) return;
+    state.extracting=true; state.error=null; render();
     try {
-      const tasks = await extractTasks(state.inputText);
-      state.tasks = tasks.map((t, i) => ({ ...t, _id: i, _selected: true }));
-      state.step = 1;
-    } catch(e) {
-      state.error = e.message;
-    }
-    state.extracting = false;
+      const tasks=await apiExtract(state.inputText, state.source);
+      if(!Array.isArray(tasks)||tasks.length===0) throw new Error("Nenhuma tarefa encontrada no texto.");
+      state.tasks=tasks.map((t,i)=>({...t,_id:i,_sel:true}));
+      state.step=1;
+    } catch(e){ state.error=e.message; }
+    state.extracting=false; render();
+  });
+
+  document.getElementById("btn-back")?.addEventListener("click",()=>{state.step=0;render()});
+
+  document.querySelectorAll(".task-check").forEach(cb=>cb.addEventListener("change",e=>{
+    const id=+e.target.dataset.id;
+    state.tasks=state.tasks.map(t=>t._id===id?{...t,_sel:e.target.checked}:t);
     render();
-  });
+  }));
 
-  // Back
-  document.getElementById("btn-back")?.addEventListener("click", () => {
-    state.step = 0; render();
-  });
+  document.querySelectorAll("[data-field]").forEach(el=>el.addEventListener("change",e=>{
+    const id=+e.target.dataset.id,field=e.target.dataset.field;
+    state.tasks=state.tasks.map(t=>t._id===id?{...t,[field]:e.target.value}:t);
+  }));
 
-  // Task checkboxes
-  document.querySelectorAll(".task-check").forEach(cb => {
-    cb.addEventListener("change", e => {
-      const id = +e.target.dataset.id;
-      state.tasks = state.tasks.map(t => t._id === id ? { ...t, _selected: e.target.checked } : t);
-      render();
-    });
-  });
-
-  // Task field edits
-  document.querySelectorAll("[data-field]").forEach(el => {
-    el.addEventListener("change", e => {
-      const id = +e.target.dataset.id;
-      const field = e.target.dataset.field;
-      state.tasks = state.tasks.map(t => t._id === id ? { ...t, [field]: e.target.value } : t);
-    });
-  });
-
-  // Create
-  document.getElementById("btn-create")?.addEventListener("click", async () => {
-    const selected = state.tasks.filter(t => t._selected);
-    state.step = 2;
-    state.statuses = {};
-    selected.forEach(t => { state.statuses[t._id] = { status: "loading", message: "" }; });
+  document.getElementById("btn-create")?.addEventListener("click",async()=>{
+    const sel=state.tasks.filter(t=>t._sel);
+    if(!sel.length) return;
+    state.step=2; state.statuses={};
+    sel.forEach(t=>{state.statuses[t._id]={s:"loading",msg:""}});
     render();
-
-    for (const task of selected) {
+    for(const t of sel){
       try {
-        const msg = await createTaskInNotion(task);
-        state.statuses[task._id] = { status: "ok", message: msg };
-      } catch(e) {
-        state.statuses[task._id] = { status: "err", message: e.message };
+        const url=await apiCreate(t);
+        state.statuses[t._id]={s:"ok",msg:url};
+      } catch(e){
+        state.statuses[t._id]={s:"err",msg:e.message};
       }
       render();
     }
-    state.step = 3;
-    render();
+    state.step=3; render();
   });
 
-  // Reset
-  document.getElementById("btn-reset")?.addEventListener("click", () => {
-    state.step = 0; state.tasks = []; state.statuses = {};
-    state.inputText = ""; state.error = null;
+  document.getElementById("btn-reset")?.addEventListener("click",()=>{
+    state={...state,step:0,tasks:[],statuses:{},inputText:"",error:null};
     render();
   });
 }
 
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 
-function extractNotionUrl(text) {
-  const m = text.match(/https:\/\/www\.notion\.so\/[a-zA-Z0-9\-_?=&%]+/);
-  return m ? m[0] : null;
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-// Auto-setup via URL hash: #altum=base64(ak::nt)
-(function() {
-  try {
-    var h = window.location.hash.replace('#','');
-    if (h.startsWith('altum=')) {
-      var decoded = atob(h.slice(6));
-      var parts = decoded.split('::');
-      if (parts[0]) { localStorage.setItem('altum_anthropic_key', parts[0]); state.anthropicKey = parts[0]; }
-      state.showSetup = false;
-      history.replaceState(null, '', window.location.pathname);
-    }
-  } catch(e) {}
-})();
 render();
 </script>
 </body>
