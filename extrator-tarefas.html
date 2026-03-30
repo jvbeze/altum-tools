@@ -659,9 +659,7 @@ function bindEvents() {
     const ak = document.getElementById("setup-anthropic").value.trim();
     if (!ak) { alert("Informe a Anthropic API Key."); return; }
     state.anthropicKey = ak;
-    state.notionToken = nt;
     localStorage.setItem("altum_anthropic_key", ak);
-    localStorage.setItem("altum_notion_token", nt);
     state.showSetup = false;
     render();
   });
