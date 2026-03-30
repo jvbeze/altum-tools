@@ -387,7 +387,6 @@ let state = {
   error: null,
   showSetup: false,
   anthropicKey: localStorage.getItem("altum_anthropic_key") || "",
-  notionToken: localStorage.getItem("altum_notion_token") || "",
 };
 
 // Show setup on first run
@@ -452,7 +451,6 @@ Retorne APENAS um JSON array válido, sem markdown, sem texto extra:
 }
 
 async function createTaskInNotion(task) {
-  const token = state.notionToken;
   const sys = `Você cria tarefas no Notion para o AltumOS da Altum Capital.
 Banco de Tarefas ID: ${DB_ID}
 Campos disponíveis: Tarefa (título), Status, Prioridade, Peso, Tipo de Contribuição, Vertical, Data Entrega, Descrição.
@@ -490,7 +488,7 @@ function renderSetup() {
   <div class="setup-overlay" id="setup-overlay">
     <div class="setup-card">
       <div class="setup-title">Configuração inicial</div>
-      <div class="setup-subtitle">Informe suas chaves de API para usar o Extrator de Tarefas. Dados salvos localmente no seu browser.</div>
+      <div class="setup-subtitle">Informe sua Anthropic API Key para usar o Extrator de Tarefas. A integração com Notion já está configurada.</div>
 
       <div class="field-group">
         <label class="field-label">Anthropic API Key</label>
@@ -659,8 +657,7 @@ function bindEvents() {
   // Setup save
   document.getElementById("setup-save")?.addEventListener("click", () => {
     const ak = document.getElementById("setup-anthropic").value.trim();
-    const nt = document.getElementById("setup-notion").value.trim();
-    if (!ak || !nt) { alert("Preencha ambas as chaves."); return; }
+    if (!ak) { alert("Informe a Anthropic API Key."); return; }
     state.anthropicKey = ak;
     state.notionToken = nt;
     localStorage.setItem("altum_anthropic_key", ak);
@@ -730,7 +727,6 @@ function bindEvents() {
 
   // Create
   document.getElementById("btn-create")?.addEventListener("click", async () => {
-    if (!state.notionToken) { state.showSetup = true; render(); return; }
     const selected = state.tasks.filter(t => t._selected);
     state.step = 2;
     state.statuses = {};
@@ -777,7 +773,6 @@ function extractNotionUrl(text) {
       var decoded = atob(h.slice(6));
       var parts = decoded.split('::');
       if (parts[0]) { localStorage.setItem('altum_anthropic_key', parts[0]); state.anthropicKey = parts[0]; }
-      if (parts[1]) { localStorage.setItem('altum_notion_token', parts[1]); state.notionToken = parts[1]; }
       state.showSetup = false;
       history.replaceState(null, '', window.location.pathname);
     }
