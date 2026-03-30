@@ -372,7 +372,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const DB_ID   = "30a2f6d8-9721-806d-aa25-000b1c0d5ef1";
+const DB_ID   = "30a2f6d8-9721-80b9-aedc-dbedb2f9394a";
 const JV_ID   = "309d872b-594c-81f1-b0ed-00023fc6f2e7";
 const MODEL   = "claude-sonnet-4-20250514";
 
@@ -416,7 +416,7 @@ function getText(content) {
 }
 
 // Criação via Cloudflare Worker (proxy Notion API — sem CORS, token server-side)
-const WORKER_URL = "https://altum-notion-proxy.altumcapital.workers.dev";
+const WORKER_URL = "WORKER_URL_PLACEHOLDER";
 
 async function createTaskInNotion(task) {
   const res = await fetch(WORKER_URL, {
