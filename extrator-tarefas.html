@@ -392,7 +392,7 @@ let state = {
 };
 
 // Show setup on first run
-if (!state.anthropicKey || !state.notionToken) state.showSetup = true;
+// keys pre-configured
 
 // ─── API HELPERS ──────────────────────────────────────────────────────────────
 async function callAnthropic(messages, system, mcpServers = []) {
@@ -804,6 +804,20 @@ function extractNotionUrl(text) {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+// Auto-setup via URL hash: #altum=base64(ak::nt)
+(function() {
+  try {
+    var h = window.location.hash.replace('#','');
+    if (h.startsWith('altum=')) {
+      var decoded = atob(h.slice(6));
+      var parts = decoded.split('::');
+      if (parts[0]) { localStorage.setItem('altum_anthropic_key', parts[0]); state.anthropicKey = parts[0]; }
+      if (parts[1]) { localStorage.setItem('altum_notion_token', parts[1]); state.notionToken = parts[1]; }
+      state.showSetup = false;
+      history.replaceState(null, '', window.location.pathname);
+    }
+  } catch(e) {}
+})();
 render();
 </script>
 </body>
