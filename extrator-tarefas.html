@@ -402,8 +402,6 @@ async function callAnthropic(messages, system) {
     "x-api-key": state.anthropicKey,
     "anthropic-version": "2023-06-01",
   };
-  if (mcpServers.length) headers["anthropic-beta"] = "mcp-client-2025-04-04";
-
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST", headers, body: JSON.stringify(body)
   });
@@ -450,24 +448,7 @@ Retorne APENAS um JSON array válido, sem markdown, sem texto extra:
   return JSON.parse(raw);
 }
 
-async function createTaskInNotion(task) {
-  const sys = `Você cria tarefas no Notion para o AltumOS da Altum Capital.
-Banco de Tarefas ID: ${DB_ID}
-Campos disponíveis: Tarefa (título), Status, Prioridade, Peso, Tipo de Contribuição, Vertical, Data Entrega, Descrição.
-Status padrão: "A Fazer". Use os valores exatos dos campos select.
-Ao criar, confirme com a URL da página criada.`;
 
-  const prompt = `Crie esta tarefa no banco Tarefas (${DB_ID}):
-Título: "${task.titulo}"${task.descricao ? `\nDescrição: "${task.descricao}"` : ""}
-Status: A Fazer
-Prioridade: ${task.prioridade || "🟡 Média"}${task.vertical ? `\nVertical: "${task.vertical}"` : ""}${task.tipo ? `\nTipo de Contribuição: "${task.tipo}"` : ""}${task.prazo ? `\nData Entrega: ${task.prazo}` : ""}`;
-
-  return await callWithMCP(
-    [{ role: "user", content: prompt }],
-    sys,
-    token
-  );
-}
 
 // ─── RENDER ──────────────────────────────────────────────────────────────────
 function render() {
