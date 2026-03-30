@@ -415,7 +415,7 @@ function getText(content) {
 }
 
 // Criação via Cloudflare Worker (proxy Notion API — sem CORS, token server-side)
-const WORKER_URL = "WORKER_URL_PLACEHOLDER";
+const WORKER_URL = "https://altum-notion-proxy.altumcapital.workers.dev";
 
 async function createTaskInNotion(task) {
   const res = await fetch(WORKER_URL, {
