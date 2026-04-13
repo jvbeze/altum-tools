@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador de NDA — Altum Capital</title>
+  <title>Gerador de NDA â Altum Capital</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { min-height: 100vh; background: linear-gradient(135deg, #0d1621 0%, #111e2e 100%); display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; padding: 32px 16px; }
@@ -63,7 +62,7 @@
       </div>
       <div class="card-title">Gerador de NDA</div>
       <div class="card-subtitle">Preencha os dados &mdash; e-mail enviado automaticamente.</div>
-      <button class="gear-btn" id="gearBtn" title="Configurações de envio">&#9881;</button>
+      <button class="gear-btn" id="gearBtn" title="ConfiguraÃ§Ãµes de envio">&#9881;</button>
     </div>
     <div class="onboarding" id="onboarding">
       <div class="ob-steps">
@@ -71,17 +70,17 @@
         <div class="ob-arrow">&rarr;</div>
         <div class="ob-step"><div class="ob-icon">&#9313;</div><div class="ob-text">Clique em <strong>Enviar NDA</strong></div></div>
         <div class="ob-arrow">&rarr;</div>
-        <div class="ob-step"><div class="ob-icon">&#9314;</div><div class="ob-text">E-mail disparado para Anna &mdash; <strong>JV em cópia</strong>. Sem cliente de e-mail.</div></div>
+        <div class="ob-step"><div class="ob-icon">&#9314;</div><div class="ob-text">E-mail disparado para Anna &mdash; <strong>JV em cÃ³pia</strong>. Sem cliente de e-mail.</div></div>
       </div>
       <button class="ob-close" onclick="document.getElementById('onboarding').style.display='none'" title="Fechar">&#10005;</button>
     </div>
     <div class="card-body">
       <div class="settings-panel hidden" id="settingsPanel">
-        <div class="settings-title">&#9881; Configurações de Envio</div>
-        <div class="field"><label>E-mail destino (responsável ZapSign)</label><input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" /></div>
-        <div class="field"><label>E-mail em cópia (CC — JV)</label><input type="email" id="cfgCC" value="jv@altumcapital.com.br" /></div>
+        <div class="settings-title">&#9881; ConfiguraÃ§Ãµes de Envio</div>
+        <div class="field"><label>E-mail destino (responsÃ¡vel ZapSign)</label><input type="email" id="cfgDest" value="anna.nascimento@altumcapital.com.br" /></div>
+        <div class="field"><label>E-mail em cÃ³pia (CC â JV)</label><input type="email" id="cfgCC" value="jv@altumcapital.com.br" /></div>
       </div>
-      <div class="field"><label>Razão Social ou Nome Completo <span class="req">*</span></label><input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." /></div>
+      <div class="field"><label>RazÃ£o Social ou Nome Completo <span class="req">*</span></label><input type="text" id="razaoSocial" placeholder="Ex: Empresa XYZ Ltda." /></div>
       <div class="field"><label>CPF ou CNPJ</label><input type="text" id="cnpjCpf" placeholder="Opcional" /></div>
       <div class="divider"></div>
       <div class="row">
@@ -100,10 +99,6 @@
     </div>
   </div>
   <script>
-    var EMAILJS_PUBLIC_KEY  = 'ULuqj-NuMuRStfuu6';
-    var EMAILJS_SERVICE_ID  = 'service_05zddvw';
-    var EMAILJS_TEMPLATE_ID = 'template_6gyr93a';
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     document.getElementById('gearBtn').addEventListener('click', function() {
       document.getElementById('settingsPanel').classList.toggle('hidden');
       this.classList.toggle('active');
@@ -122,25 +117,30 @@
     }
     function enviarNDA() {
       var r=document.getElementById('razaoSocial').value.trim();
-      var c=document.getElementById('cnpjCpf').value.trim()||'Não informado';
+      var c=document.getElementById('cnpjCpf').value.trim()||'NÃ£o informado';
       var rep=document.getElementById('representante').value.trim();
       var cargo=document.getElementById('cargo').value.trim()||'Representante Legal';
       var email=document.getElementById('emailRep').value.trim();
       var dest=document.getElementById('cfgDest').value.trim();
       var cc=document.getElementById('cfgCC').value.trim();
-      if(!r||!rep||!email){showMsg('err','&#10005; &nbsp;Preencha os campos obrigatórios marcados com *.');return;}
+      if(!r||!rep||!email){showMsg('err','&#10005; &nbsp;Preencha os campos obrigatÃ³rios marcados com *.');return;}
       setLoading(true);
-      emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
-        to_email:dest, cc_email:cc, razao_social:r,
-        cnpj_cpf:c, representante:rep, cargo:cargo, email_rep:email
-      }).then(function(){
+      fetch('https://nda-sender.altumcapital.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to_email: dest, cc_email: cc, razao_social: r, cnpj_cpf: c, representante: rep, cargo: cargo, email_rep: email })
+      })
+      .then(res => res.json())
+      .then(data => {
         setLoading(false);
-        showMsg('ok','&#10003; &nbsp;E-mail enviado para <strong>'+dest+'</strong> com cópia para JV.');
-        ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id){document.getElementById(id).value='';});
-      }).catch(function(e){
-        setLoading(false);
-        showMsg('err','&#10005; &nbsp;Erro: '+((e&&e.text)?e.text:JSON.stringify(e)));
-      });
+        if (data.success) {
+          showMsg('ok', '&#10003; &nbsp;E-mail enviado para <strong>' + dest + '</strong> com cópia para JV.');
+          ['razaoSocial','cnpjCpf','representante','cargo','emailRep'].forEach(function(id){ document.getElementById(id).value = ''; });
+        } else {
+          showMsg('err', '&#10005; &nbsp;Erro: ' + JSON.stringify(data.error));
+        }
+      })
+      .catch(e => { setLoading(false); showMsg('err', '&#10005; &nbsp;Erro de rede: ' + e.message); });
     }
   </script>
 </body>
